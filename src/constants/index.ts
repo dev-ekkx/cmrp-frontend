@@ -33,6 +33,18 @@ export const sidebarData = [
   // }
 ]
 
+export const userFilters = [
+  {name: 'All Users', code: 'all'},
+  {name: 'Administrators', code: 'administrator'},
+  {name: 'City Officials', code: 'city official'},
+  {name: 'Citizens', code: 'citizen'},
+];
+
+export const userRoles = [
+  {label: 'Administrator', value: 'Admin'},
+  {label: 'City Official', value: 'CityOfficial'},
+];
+
 
 export const ghanaRegions: RegionI[] = [
   {

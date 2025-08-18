@@ -1,6 +1,13 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 import {UserCard} from '@/pages/dashboard-layout/users/user-card/user-card';
-import {ghanaRegions, usersTableData, userSummaryCards, userTableHeaders} from '@/constants/index';
+import {
+  ghanaRegions,
+  userFilters,
+  userRoles,
+  usersTableData,
+  userSummaryCards,
+  userTableHeaders
+} from '@/constants/index';
 import {IconField} from 'primeng/iconfield';
 import {InputIcon} from 'primeng/inputicon';
 import {InputText} from 'primeng/inputtext';
@@ -16,6 +23,8 @@ import {InputMask} from 'primeng/inputmask';
 import {TitleCasePipe} from '@angular/common';
 import {RegionOrCityOption} from '@/interfaces/user-interface';
 import {AuthService} from '../../../services/auth-service/auth-service';
+import {ConfirmationService, MessageService} from 'primeng/api';
+import {ConfirmDialog} from 'primeng/confirmdialog';
 
 @Component({
   selector: 'cmrp-users',
@@ -35,41 +44,33 @@ import {AuthService} from '../../../services/auth-service/auth-service';
     FloatLabel,
     InputMask,
     ReactiveFormsModule,
-    TitleCasePipe
+    TitleCasePipe,
+    ConfirmDialog
   ],
   templateUrl: './users.html',
   styleUrl: './users.css'
 })
 export class Users implements OnInit {
   protected readonly userSummaryCards = userSummaryCards;
-  protected showAddUserModal = true;
+  protected showAddUserModal = false;
   protected selectedGroup = {
     name: "All Users",
     code: "all"
   }
 
   protected authService = inject(AuthService)
-  protected searchValue = ""
-  protected readonly userTableHeaders = userTableHeaders;
-  protected readonly usersTableData = usersTableData
-  protected readonly cn = cn;
-  protected minLengthValidator = Validators.minLength(5);
-  protected isSubmitting = signal(false);
-
-  protected filters = [
-    {name: 'All Users', code: 'all'},
-    {name: 'Administrators', code: 'administrator'},
-    {name: 'City Officials', code: 'city official'},
-    {name: 'Citizens', code: 'citizen'},
-  ];
-
-  protected roles = [
-    {label: 'Administrator', value: 'Admin'},
-    {label: 'City Official', value: 'CityOfficial'},
-  ];
-
+  protected confirmationService = inject(ConfirmationService);
+  protected messageService = inject(MessageService);
   protected regions: RegionOrCityOption[] = []
   protected cities: RegionOrCityOption[] = []
+  protected readonly cn = cn;
+  protected searchValue = ""
+  protected readonly userTableHeaders = userTableHeaders;
+  protected readonly userRoles = userRoles;
+  protected readonly userFilters = userFilters;
+  protected readonly usersTableData = usersTableData
+  protected minLengthValidator = Validators.minLength(5);
+  protected isSubmitting = signal(false);
   protected userForm: FormGroup = new FormGroup({
     name: new FormControl("", [Validators.required, this.minLengthValidator]),
     email: new FormControl("", [Validators.required, Validators.email]),
@@ -88,6 +89,33 @@ export class Users implements OnInit {
       const region = ghanaRegions.find(r => r.value === regionValue.value);
       this.cities = region ? region.cities : [];
       this.userForm.get('city')?.reset();
+    });
+  }
+
+  protected removeUser(event: Event) {
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Do you want to remove this user?',
+      header: 'Danger Zone',
+      icon: 'pi pi-info-circle',
+      rejectLabel: 'Cancel',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+        severity: 'danger',
+      },
+
+      accept: () => {
+        this.messageService.add({severity: 'info', summary: 'Confirmed', detail: 'User removed'});
+      },
+      reject: () => {
+        console.log("rejected")
+        // this.messageService.add({severity: 'error', summary: 'Rejected', detail: 'You have rejected'});
+      },
     });
   }
 
@@ -118,14 +146,11 @@ export class Users implements OnInit {
   }
 
   protected onSubmit() {
+    this.isSubmitting.set(true)
     if (this.userForm.valid) {
       this.authService.onboardUser(this.userForm.value)
       console.log(this.userForm.value);
     }
-
-  }
-
-  protected removeUser(userId: string) {
 
   }
 }

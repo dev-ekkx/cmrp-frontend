@@ -4,7 +4,7 @@ import {provideAnimationsAsync} from '@angular/platform-browser/animations/async
 import {providePrimeNG} from 'primeng/config';
 import {routes} from './cmrp.routes';
 import {Noir} from './prime-ng.config';
-import {MessageService} from 'primeng/api';
+import {ConfirmationService, MessageService} from 'primeng/api';
 import {provideHttpClient} from '@angular/common/http';
 
 export const cmrpConfig: ApplicationConfig = {
@@ -15,6 +15,7 @@ export const cmrpConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideHttpClient(),
     MessageService,
+    ConfirmationService,
     providePrimeNG({
       ripple: true,
       theme: {
