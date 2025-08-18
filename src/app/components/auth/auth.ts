@@ -11,6 +11,9 @@ import {AuthService} from "../../services/auth-service/auth-service";
 import {ToastService} from "../../services/toast-service/toast-service";
 import {InputOtp} from "primeng/inputotp";
 import {UserStore} from '@/store/user-store';
+import {ghanaRegions} from '@/constants/index';
+import {RegionOrCityOption} from '@/interfaces/user-interface';
+import {Select} from 'primeng/select';
 
 @Component({
   selector: 'cmrp-auth',
@@ -24,6 +27,7 @@ import {UserStore} from '@/store/user-store';
     NgTemplateOutlet,
     Button,
     InputOtp,
+    Select,
   ],
   templateUrl: './auth.html',
   styleUrl: './auth.css'
@@ -38,7 +42,8 @@ export class Auth {
   protected formType = signal<"login" | "signup" | "otp">("login")
   protected minLengthValidator = Validators.minLength(5);
   protected readonly cn = cn;
-
+  protected regions: RegionOrCityOption[] = []
+  protected cities: RegionOrCityOption[] = []
   protected userStore = inject(UserStore)
   protected authService = inject(AuthService);
   protected toastService = inject(ToastService);
@@ -51,11 +56,20 @@ export class Auth {
 
   constructor() {
     this.authForm = this.createLoginForm()
+    this.regions = ghanaRegions.map(r => ({label: r.label, value: r.value}));
     effect(() => {
       if (this.formType()) {
         this.authForm = this.formCreators[this.formType()]?.()
         this.authFormControls.set(Object.keys(this.authForm.controls))
       }
+
+
+      // update cities when region changes
+      this.authForm.get('region')?.valueChanges.subscribe(regionValue => {
+        const region = ghanaRegions.find(r => r.value === regionValue.value);
+        this.cities = region ? region.cities : [];
+        this.authForm.get('city')?.reset();
+      });
     });
 
   }

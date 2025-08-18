@@ -3,7 +3,7 @@ import {patchState, signalStore, withComputed, withHooks, withMethods, withState
 import {computed, inject} from '@angular/core';
 import {AuthService} from '../app/services/auth-service/auth-service';
 
-const isSignedIn = Boolean(localStorage.getItem('isSignedIn') as string)
+const isSignedIn = JSON.parse(localStorage.getItem('isSignedIn') as string ?? "false")
 console.log(isSignedIn);
 const initialState: UserInterface = {
   user: {
