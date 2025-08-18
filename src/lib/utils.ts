@@ -1,6 +1,9 @@
 import {type ClassValue, clsx} from "clsx"
 import {twMerge} from "tailwind-merge"
 import {AbstractControl, ValidationErrors, ValidatorFn} from '@angular/forms';
+import {IncidentType} from '@/types/index';
+import {UserInterface} from '@/interfaces/user-interface';
+import {fetchAuthSession, getCurrentUser} from "aws-amplify/auth";
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
@@ -61,3 +64,54 @@ export const matchPasswordValidator = (passwordKey: string, confirmPasswordKey: 
     }
   };
 }
+
+export const getIncidentSeverity = (incident: IncidentType | string) => {
+  const dataMap: Record<IncidentType, string> = {
+    low: "secondary",
+    urgent: "danger",
+    high: "danger",
+    medium: "warn",
+    active: "danger",
+    investigating: "info",
+    resolved: "success",
+  };
+
+  return dataMap[incident as IncidentType];
+}
+
+
+export const checkTokenExpiry = (expiry: number) => {
+  const currentTime = Math.floor(Date.now() / 1000);
+  return currentTime > expiry
+}
+
+export const getUserAndAuthData = async () => {
+  const [authSession, currentUser] = await Promise.all([
+    fetchAuthSession(),
+    getCurrentUser()
+  ]);
+
+
+  const userInfo = authSession?.tokens?.idToken?.payload ?? {};
+
+  const user: UserInterface["user"] = {
+    userId: currentUser?.userId ?? "",
+    name: userInfo["name"] ?? "",
+    email: userInfo["email"] ?? "",
+    telephone: userInfo["phone_number"] ?? "",
+    region: userInfo["custom:region"] ?? "",
+    city: userInfo["custom:city"] ?? "",
+    role: Array.isArray(userInfo["cognito:groups"])
+      ? userInfo["cognito:groups"]?.[0] ?? "Citizen"
+      : "Citizen",
+  } as UserInterface["user"]
+
+
+  return {
+    user,
+    auth: {
+      expiry: userInfo.exp ?? 0
+    }
+  };
+};
+

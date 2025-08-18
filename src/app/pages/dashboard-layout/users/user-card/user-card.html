@@ -1,0 +1,19 @@
+<div class="rounded-md border shadow border-dark-gray/50 flex flex-col gap-3 p-4">
+  <div class="flex items-center gap-4 justify-between">
+    <span class="font-semibold text-md capitalize">{{ userSummary().title }}</span>
+    <span [class]="cn('flex items-center justify-center rounded-md p-2', {
+    'text-blue-500 bg-blue-200': userSummary().title === 'administrators',
+    'text-green-500 bg-green-200': userSummary().title === 'city officials',
+    'text-neutral-500 bg-neutral-200': userSummary().title === 'citizens',
+    })">
+    <i class="pi pi-users text-2xl"></i>
+    </span>
+  </div>
+  <span class="text-neutral-500">
+    <span class="font-semibold text-neutral-900 text-2xl">
+  {{ userSummary().count }}
+    </span>
+    {{ userSummary().title }}
+  </span>
+  <p class="text-neutral-500 text-sm">Total number of {{ userSummary().title }} in the system</p>
+</div>

@@ -25,8 +25,8 @@ export const Noir = definePreset(Aura, {
           activeColor: '{zinc.800}'
         },
         highlight: {
-          background: '{zinc.950}',
-          focusBackground: '{zinc.700}',
+          background: '#111C43FF',
+          focusBackground: '#1D284DFF',
           color: '#ffffff',
           focusColor: '#ffffff'
         }

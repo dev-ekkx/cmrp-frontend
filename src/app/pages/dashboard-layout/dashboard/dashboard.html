@@ -1,0 +1,60 @@
+<div class="flex gap-4 justify-between items-center">
+  <div class="flex flex-col mb-6">
+    <h4 class="font-bold text-3xl">Dashboard</h4>
+    <p class="text-neutral-500">Manage and track city incidents and reports</p>
+  </div>
+
+  <!--  TODO: Add search and filter functionalities-->
+  <!--  <div class="flex items-center gap-4">-->
+  <!--    <button class="flex items-center gap-2" pButton>-->
+  <!--      <i class="pi pi-filter"></i>-->
+  <!--      <span>Filter</span>-->
+  <!--    </button>-->
+  <!--  </div>-->
+</div>
+
+<!--incidents summary section-->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
+  @for (incident of incidentsData; track incident.title) {
+    <p-card class="w-full rounded-lg border border-dark-gray/50 flex flex-col gap-2">
+      <div class="flex items-center justify-between gap-4">
+        <span class="capitalize text-black text-md font-semibold">{{ incident.title }}</span>
+        <div
+          [class]="cn('text-white h-10 w-10 rounded-lg flex items-center justify-center', {
+          'bg-linear-to-t from-sky-500 to-indigo-500': ['total incidents', 'in progress'].includes(incident.title.toLowerCase()),
+          'bg-yellow-500': incident.title.toLowerCase() === 'pending review',
+          'bg-green-500': incident.title.toLowerCase() === 'resolved',
+          })"
+        >
+          <i [class]="incident.icon" style="font-size: 1.3rem"></i>
+        </div>
+      </div>
+      <span class="font-bold text-2xl">{{ incident.total }}</span>
+      <p class="text-neutral-500 text-sm my-2">{{ incident.description }}</p>
+      <p class="text-neutral-500 text-sm flex items-center gap-1.5">
+        <span
+          [class]="incident.increment ? 'text-green-600' : 'text-red-600'"
+        >
+          {{ (incident.increment ? "+" : "-") + incident.incOrDecValue + "%" }}</span>
+        <span>from last week</span>
+      </p>
+    </p-card>
+  }
+</div>
+
+<!--Recent incidents section-->
+<p-card class="mt-6 w-full p-3 rounded-lg border border-dark-gray/50 flex flex-col gap-5">
+  <span class="flex items-center gap-2 capitalize font-bold text-2xl">
+    <i class="pi pi-exclamation-triangle" style="font-size: 1.5rem"></i>
+    <span>recent incidents</span>
+  </span>
+
+  <!--  incident cards-->
+  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mt-6">
+    @for (incident of recentIncidentsData; track incident.title) {
+      <cmrp-incident-card
+        [incident]="incident"
+      />
+    }
+  </div>
+</p-card>

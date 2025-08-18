@@ -1,0 +1,196 @@
+<section class="flex gap-6 justify-between">
+  <div class="flex flex-col mb-6">
+    <h4 class="font-bold text-3xl">User Management</h4>
+    <p class="text-neutral-500">Onboard other administrators and city officials</p>
+  </div>
+
+  <button (click)="showAddUserModal = true"
+          class="bg-primary h-max flex items-center gap-2 active:bg-primary-light hover:bg-primary-light" pButton>
+    <i class="pi pi-user-plus text-white"></i>
+    <span>Add User</span>
+  </button>
+</section>
+
+<!--User summary cards -->
+<div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+  @for (user of userSummaryCards; track user.title) {
+    <cmrp-user-card [userSummary]="user"/>
+  }
+</div>
+
+<section class="rounded-md shadow border border-dark-gray/50 flex flex-col gap-3 p-4 mt-6">
+  <div class="flex items-center gap-4 justify-between">
+    <div class="flex flex-col">
+      <span class="font-bold text-3xl">Current Users</span>
+      <p class="text-neutral-500">Active users in the system</p>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <p-icon-field>
+        <p-inputicon class="pi pi-search"/>
+        <input [(ngModel)]="searchValue" pInputText placeholder="Search by name" type="search"/>
+      </p-icon-field>
+
+      <p-select [(ngModel)]="selectedGroup" [options]="userFilters" class="w-44"
+                optionLabel="name" placeholder="Select filter"
+      />
+    </div>
+  </div>
+
+  <!--  Users table-->
+  <p-table
+    [paginator]="true"
+    [rows]="10"
+    [tableStyle]="{ 'min-width': '60rem' }"
+    [value]="getUsers()"
+    class="mt-5"
+  >
+    <ng-template #header>
+      <tr>
+        @for (header of userTableHeaders; track header) {
+
+          <th>{{ header }}</th>
+        }
+      </tr>
+    </ng-template>
+    <ng-template #body let-user>
+      <tr class="capitalize">
+        <td>{{ user.id }}</td>
+        <td>{{ user.name }}</td>
+        <td class="lowercase">{{ user.email }}</td>
+        <td>{{ user.telephone }}</td>
+        <td>{{ user.region }}</td>
+        <td>{{ user.city }}</td>
+        <td>{{ user.role }}</td>
+
+        <td>
+          <div class="flex items-center">
+            <!--            <p-button-->
+            <!--              aria-label="update User"-->
+            <!--              icon="pi pi-user-edit"-->
+            <!--              pTooltip="Update User"-->
+            <!--              tooltipPosition="top"-->
+            <!--              variant="text"-->
+            <!--            />-->
+            <p-button
+              (click)="removeUser($event)"
+              aria-label="remove User"
+              icon="pi pi-user-minus"
+              pTooltip="Remove User"
+              tooltipPosition="top"
+              variant="text"
+            />
+          </div>
+        </td>
+
+
+      </tr>
+    </ng-template>
+    <ng-template #footer>
+      <tr>
+        <td colspan="8">In total there are {{ getUsers() ? getUsers().length : 0 }} users.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</section>
+
+<!--Confirm dialog for removing user-->
+<p-confirmDialog/>
+
+<!--Add user dialog-->
+@if (showAddUserModal) {
+  <p-dialog [(visible)]="showAddUserModal"
+            [breakpoints]="{ '5199px': '30vw', '1699px': '45vw', '1199px': '55vw', '1029px': '75vw', '575px': '90vw' }"
+            [draggable]="false"
+            [modal]="true"
+            [resizable]="false"
+            [style]="{ width: '50vw' }"
+            maskStyleClass="backdrop-blur-sm"
+  >
+    <!--  Modal content-->
+    <!--    Form container-->
+    <form [formGroup]="userForm" class="flex flex-col gap-5">
+      <!--Form description-->
+      <div class="flex flex-col  text-center">
+        <h3 class="capitalize font-semibold text-2xl">Onboard Admin or City Official</h3>
+        <p>Enter the details of the user to onboard</p>
+      </div>
+
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-4">
+        <!--      Map through dynamic form elements-->
+        @for (control of userFormControls(); track control) {
+          @let
+          inputError = userForm.get(control)?.invalid && (userForm.get(control)?.dirty || userForm.get(control)?.touched);
+          @let label = control.split('_').join(' ');
+          <div>
+
+            <p-float-label variant="on">
+              @if (control === 'telephone') {
+                <p-input-mask
+                  mask="(999) 999-9999"
+                  styleClass="w-full"
+                  [invalid]="inputError"
+                  [id]="control"
+                  [autofocus]="false"
+                  [formControlName]="control"
+                  [unmask]="true"
+                />
+              } @else if (["region", "city", "role"].includes(control)) {
+                <p-select
+                  [formControlName]="control"
+                  [options]="control === 'role'? userRoles : (control === 'region' ? regions : cities)"
+                  [invalid]="inputError"
+                  [autofocus]="false"
+                  appendTo="body"
+                  optionLabel="label" class="w-full"/>
+              } @else {
+                <input autocomplete="on" [type]="getInputType(control)"
+                       [id]="control"
+                       [formControlName]="control"
+                       pInputText
+                       class="w-full"
+                       [invalid]="inputError"
+                />
+              }
+              <label class="text-sm" [for]="control">{{ label | titlecase }}</label>
+            </p-float-label>
+            @if (inputError) {
+              <div class="text-sm text-red-600">
+                @if (userForm.get(control)?.errors?.['required']) {
+                  <div>{{ label | titlecase }} is required</div>
+                }
+                @if (userForm.get(control)?.errors?.['email']) {
+                  <div>Please enter a valid email address</div>
+                }
+                @if (userForm.get(control)?.errors?.['minlength']) {
+                  <div>{{ control | titlecase }} must be at least 5 characters long</div>
+                }
+                @if (userForm.get(control)?.errors?.['invalidGhanaPhone']) {
+                  <div>Enter a valid 10-digit Ghanaian phone number (e.g., 0241234567).</div>
+                }
+                @if (userForm.get('confirm_password')?.errors?.['passwordMismatch']) {
+                  <div>Passwords do not match.</div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </form>
+
+    <ng-template #footer>
+      <div class="flex items-center gap-4">
+        <p-button (click)="showAddUserModal = false" label="Cancel" variant="outlined"/>
+        <p-button
+          (click)="onSubmit()"
+          [disabled]="userForm.invalid"
+          [loading]="isSubmitting()"
+          label="Onboard User"
+          styleClass="w-full bg-primary-light"
+          type="submit"
+        />
+      </div>
+    </ng-template>
+  </p-dialog>
+}

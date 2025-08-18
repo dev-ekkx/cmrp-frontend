@@ -1,0 +1,24 @@
+<div class="rounded-md border shadow border-dark-gray/50 flex flex-col gap-3 p-4">
+    <div class="flex items-center justify-between gap-4">
+        <span class="font-semibold text-md capitalize">{{ incident().title }}</span>
+        <i [class]="cn(`${incident().icon} text-2xl`, {
+    'text-red-600': incident().title === 'active incidents',
+    'text-blue-600': incident().title === 'under investigation',
+    'text-green-600': incident().title === 'resolved today',
+    'text-neutral-600': incident().title === 'response time',
+    })"></i>
+    </div>
+    <span class="font-bold text-2xl flex items-center">
+    <span [class]="cn('text-black   ', {
+        'text-red-600': incident().title === 'active incidents',
+    'text-blue-600': incident().title === 'under investigation',
+    'text-green-600': incident().title === 'resolved today',
+    })">{{ incident().number }}</span>
+        @if (incident().title === 'response time') {
+            <span>h</span>
+        }
+  </span>
+    <span class="text-neutral-500 text-sm">{{ incident().description }}</span>
+</div>
+
+

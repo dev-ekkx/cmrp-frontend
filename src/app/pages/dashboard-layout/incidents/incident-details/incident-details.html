@@ -1,0 +1,57 @@
+<div class="flex flex-col gap-5">
+  <div class="grid grid-cols-2">
+    <span class="flex flex-col gap-1">
+      <span class="font-semibold">Status</span>
+      @let incidentStatus = incident().status.toLowerCase();
+      <p-tag [rounded]="true" [severity]="getIncidentSeverity(incidentStatus)" [value]="incident().status"
+             class="w-max px-4!"/>
+    </span>
+    <span class="flex flex-col gap-1">
+      <span class="font-semibold">Priority</span>
+      @let incidentPriority = incident().priority.toLowerCase();
+      <p-tag [rounded]="true" [severity]="getIncidentSeverity(incidentPriority)" [value]="incident().priority"
+             class="w-max px-4!"/>
+    </span>
+  </div>
+  <div class="flex flex-col gap-1">
+    <span class="font-semibold">Description</span>
+    <span>{{ incident().description }}</span>
+  </div>
+
+  <div class="grid grid-cols-2">
+    <span class="flex flex-col gap-1">
+      <span class="font-semibold">Location</span>
+      <span>{{ incident().location }}</span>
+    </span>
+    <span class="flex flex-col gap-1">
+      <span class="font-semibold">Assigned Officer</span>
+      <span>{{ incident().assignedOfficer }}</span>
+    </span>
+  </div>
+
+
+  <!--  Edit option-->
+  @if (showEditOptions()) {
+    <div class="flex flex-col gap-1">
+      <span class="capitalize font-semibold">update status</span>
+      <p-select
+        [(ngModel)]="selectedStatus"
+        [options]="statuses" appendTo="body"
+        optionLabel="name" placeholder="Select filter"
+      />
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <div class="flex items-center gap-2">
+        <span class="capitalize font-semibold">Add update info</span>
+        <span class="text-red-600">*</span>
+      </div>
+      <textarea [(ngModel)]="updateValue" placeholder="Add update info..." [autoResize]="false" class="resize-none"
+                cols="35" pInputTextarea
+                rows="5"></textarea>
+    </div>
+
+
+    <button>cliemd</button>
+  }
+</div>

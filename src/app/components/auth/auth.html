@@ -1,0 +1,161 @@
+<div class="w-full">
+    <!--Logo-->
+    <div
+            class="button-container !bg-primary-light mb-2 mx-auto h-max w-max p-3 flex-col font-black text-xl text-white rounded-md pointer-events-none">
+        <div class="bg-linear-to-t from-sky-500 to-indigo-500 h-8 w-8 flex items-center justify-center rounded-md">
+            <i class="pi pi-warehouse"></i>
+        </div>
+    </div>
+    <div class="text-neutral-500 mx-auto w-max mb-4 line-clamp-2 font-semibold text-sm">City Management and Reporting
+        platform
+    </div>
+
+    <!--    Form container-->
+    <form (ngSubmit)="onSubmit()" [formGroup]="authForm" class="flex flex-col gap-5">
+        <!--      Conditionally render form description-->
+        @if (formType() === 'otp') {
+            <div class="flex flex-col  text-center">
+                <h3 class="capitalize font-semibold text-2xl">Authenticate you Account</h3>
+                <p>Please enter the code sent to your email</p>
+            </div>
+        } @else {
+            <ng-container
+                    [ngTemplateOutlet]="formType() === 'login' ? loginDescription : signupDescription"></ng-container>
+        }
+
+        <div [class]="cn('grid grid-cols-1 gap-5 mt-4',
+      {
+      'md:grid-cols-2': formType() === 'signup'
+      }
+      )">
+            <!--      Map through dynamic form elements-->
+            @for (control of authFormControls(); track control) {
+                @let
+                inputError = authForm.get(control)?.invalid && (authForm.get(control)?.dirty || authForm.get(control)?.touched);
+                @let label = control.split('_').join(' ');
+                <div [class]="cn('', {
+          'md:col-span-2': control === 'name' && formType() === 'signup'
+          })">
+                    @if (formType() === 'otp') {
+                        <p-inputOtp
+                                [invalid]="inputError"
+                                [id]="control"
+                                [length]="6"
+                                [formControlName]="control"
+                                autofocus
+                                class="mx-auto flex justify-center -mt-4"/>
+                    } @else {
+                        <p-float-label variant="on">
+                            @if (control === 'password' || control === 'confirm_password') {
+                                <label class="text-sm" [for]="control">{{ control | titlecase }}</label>
+                                <p-password [toggleMask]="true" autocomplete="on" [id]="control"
+                                            [formControlName]="control"
+                                            [invalid]="inputError"
+                                            [feedback]="formType() === 'signup' && control === 'password'"
+                                            [class]="cn('w-full invalid:text-red-600', {
+                            '!text-red-600': inputError
+                            })"
+                                            inputStyleClass="w-full"
+                                >
+
+                                    @if (formType() === 'signup') {
+                                        <ng-template #footer>
+                                            <ul class="pl-2 mt-2 text-xs">
+                                                <li>At least one lowercase</li>
+                                                <li>At least one uppercase</li>
+                                                <li>At least one numeric</li>
+                                                <li>Minimum 8 characters</li>
+                                            </ul>
+                                        </ng-template>
+                                    }
+                                </p-password>
+                            } @else if (control === 'telephone' && formType() === 'signup') {
+                                <p-input-mask
+                                        mask="(999) 999-9999"
+                                        styleClass="w-full"
+                                        [invalid]="inputError"
+                                        [id]="control"
+                                        [formControlName]="control"
+                                        [unmask]="true"
+                                />
+                            } @else if (["region", "city"].includes(control)) {
+                                <p-select
+                                        [formControlName]="control"
+                                        [options]=" control === 'region' ? regions : cities"
+                                        [invalid]="inputError"
+                                        [autofocus]="false"
+                                        appendTo="body"
+                                        optionLabel="label" class="w-full"/>
+                            } @else {
+                                <input autocomplete="on" [type]="getInputType(control)" [id]="control"
+                                       [formControlName]="control"
+                                       pInputText
+                                       class="w-full"
+                                       [invalid]="inputError"
+                                />
+                            }
+                            <label class="text-sm" [for]="control">{{ label | titlecase }}</label>
+                        </p-float-label>
+                    }
+                    @if (inputError && formType() !== 'otp') {
+                        <div [class]="cn('text-sm text-red-600', {
+              'text-center -ml-4': formType() === 'otp'
+              })">
+                            @if (authForm.get(control)?.errors?.['required']) {
+                                <div>{{ label | titlecase }} is required</div>
+                            }
+                            @if (authForm.get(control)?.errors?.['email']) {
+                                <div>Please enter a valid email address</div>
+                            }
+                            @if (authForm.get(control)?.errors?.['minlength']) {
+                                <div>{{ control | titlecase }} must be at least 5 characters long</div>
+                            }
+                            @if (authForm.get(control)?.errors?.['invalidGhanaPhone']) {
+                                <div>Enter a valid 10-digit Ghanaian phone number (e.g., 0241234567).</div>
+                            }
+                            @if (authForm.get('confirm_password')?.errors?.['passwordMismatch']) {
+                                <div>Passwords do not match.</div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+        <p-button
+                [disabled]="authForm.invalid"
+                [label]="formType() === 'otp' ? 'Confirm' : (formType() === 'signup' ? 'Sign Up' : 'Sign In')"
+                [loading]="isSubmitting()"
+                styleClass="w-full bg-primary-light"
+                type="submit"
+
+        />
+        @if (formType() !== 'otp') {
+            <div class="text-sm **:text-sm flex items-center -mt-4">
+                <span>{{ formType() === 'signup' ? 'Already have an account?' : "Don't have an account?" }}</span>
+                <p-button
+                        (onClick)="formType.set(formType() === 'signup' ? 'login' : 'signup')"
+                        [label]="formType() === 'signup' ? 'Sign In' : 'Sign Up'"
+                        link
+                        styleClass="text-blue-600 -ml-2"
+                />
+            </div>
+        }
+    </form>
+
+</div>
+
+<!-- Login Description Template -->
+<ng-template #loginDescription>
+    <div class="flex flex-col text-center gap-1">
+        <h3 class="capitalize font-semibold text-2xl">welcome back </h3>
+        <p>Access your city management dashboard.</p>
+    </div>
+</ng-template>
+
+<!-- Signup Description Template -->
+<ng-template #signupDescription>
+    <div class="flex flex-col text-center gap-1">
+        <h3 class="capitalize font-semibold text-2xl">Create an Account</h3>
+        <p>Join the urban management revolution.</p>
+    </div>
+</ng-template>

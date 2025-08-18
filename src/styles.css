@@ -1,4 +1,25 @@
 @import "tailwindcss";
+@import "primeicons/primeicons.css";
 
 @plugin "tailwindcss-primeui";
 
+p-password > svg {
+  @apply cursor-pointer;
+}
+
+
+@theme {
+  --color-background: oklch(0.9812 0.0034 247.86);
+  --color-primary: oklch(0.2423 0.0752 268.43);
+  --color-primary-light: oklch(0.2879 0.0693 269.24);
+  --color-gray: oklch(0.9591 0.0081 278.64);
+  --color-dark-gray: oklch(0.8137 0.006 264.53);
+
+}
+
+
+/*Custom styles*/
+
+.button-container {
+  @apply flex items-center gap-2 bg-dark-gray/10 backdrop-blur border-none;
+}

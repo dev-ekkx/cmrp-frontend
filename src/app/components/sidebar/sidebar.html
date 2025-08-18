@@ -1,0 +1,42 @@
+<aside class="xl:w-[22rem] transition-all duration-200 ease-linear flex flex-col gap-6 pb-6 bg-primary relative h-full">
+    <div class="flex flex-col gap-1 items-center justify-center h-[6rem] border-b border-b-neutral-400">
+        <!--    Custom logo-->
+        <div
+                class="button-container h-max w-max p-3 flex-col font-black text-xl text-white rounded-md pointer-events-none">
+            <div class="bg-linear-to-t from-sky-500 to-indigo-500 h-8 w-8 flex items-center justify-center rounded-md">
+                <i class="pi pi-warehouse"></i>
+            </div>
+        </div>
+        <span class="text-dark-gray font-semibold text-sm">CMRP</span>
+    </div>
+
+    <nav class="flex flex-col gap-4 px-4">
+        @for (nav of navLinks(); track nav.title) {
+            <a [routerLink]="[nav.route]"
+               routerLinkActive="bg-primary-light text-white font-semibold pointer-events-none"
+               [routerLinkActiveOptions]="{ exact: true }"
+               class=" h-10 flex items-center px-4 gap-2 rounded-md text-dark-gray hover:bg-primary-light hover:text-white transition-all duration-100 ease-linear">
+                <i [class]="`${nav.icon} text-lg`"></i>
+                <span> {{ nav.title }} </span>
+            </a>
+        }
+    </nav>
+
+    <!-- Signed in User summary-->
+    @if (isSignedIn()) {
+        <div
+                class="absolute rounded-md bg-primary-light/60 backdrop-blur-md bottom-4 left-4 w-10/12 p-4 flex flex-col gap-4">
+            <div class="flex items-center gap-2">
+                <p-avatar icon="pi pi-user" shape="circle" size="large"/>
+                <div class="flex flex-col text-white">
+                    <span class="font-semibold text-sm">{{ user().name }}</span>
+                    <span class="hidden xl:inline-block text-dark-gray text-sm">{{ user().email }}</span>
+                </div>
+            </div>
+            <button (click)="signOut()" class="button-container" pButton>
+                <i class="hidden! xl:inline-block! pi pi-sign-out"></i>
+                <span>Sign Out</span>
+            </button>
+        </div>
+    }
+</aside>
