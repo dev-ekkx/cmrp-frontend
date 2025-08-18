@@ -18,6 +18,8 @@ const initialState: UserInterface = {
   isSignedIn,
   isLoading: false,
   auth: {
+    accessToken: "",
+    idToken: "",
     expiry: 0
   }
 }

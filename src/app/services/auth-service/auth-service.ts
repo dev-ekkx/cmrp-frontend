@@ -10,6 +10,7 @@ import {AuthFormInterface, RegionOrCityOption} from '@/interfaces/user-interface
 import {Router} from '@angular/router';
 import {getUserAndAuthData} from '@/lib/utils';
 import {HttpClient} from '@angular/common/http';
+import {environment} from '@/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -52,7 +53,7 @@ export class AuthService {
       telephone,
 
     }
-    console.log(user)
+    return this.http.post(`${environment.baseUrl}/invite`, user)
   }
 
   public async signIn(data: AuthFormInterface) {
@@ -64,8 +65,6 @@ export class AuthService {
   }
 
   public async confirmSignUp(username: string, confirmationCode: string) {
-    console.log(`Confirm signing up for ${username}: ${confirmationCode}`)
-
     return await awsConfirmSignUp({
       username,
       confirmationCode

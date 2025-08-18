@@ -181,8 +181,15 @@
 
     <ng-template #footer>
       <div class="flex items-center gap-4">
-        <p-button (click)="showAddUserModal = false" label="Cancel" variant="outlined"/>
         <p-button
+          (keyup)="cancelOnboardUserOperation()"
+          (click)="cancelOnboardUserOperation()"
+          label="Cancel"
+          variant="outlined"
+        />
+        
+        <p-button
+          (keyup)="onSubmit()"
           (click)="onSubmit()"
           [disabled]="userForm.invalid"
           [loading]="isSubmitting()"

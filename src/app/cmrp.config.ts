@@ -5,7 +5,8 @@ import {providePrimeNG} from 'primeng/config';
 import {routes} from './cmrp.routes';
 import {Noir} from './prime-ng.config';
 import {ConfirmationService, MessageService} from 'primeng/api';
-import {provideHttpClient} from '@angular/common/http';
+import {provideHttpClient, withInterceptors} from '@angular/common/http';
+import {authInterceptor} from './interceptors/auth/auth-interceptor';
 
 export const cmrpConfig: ApplicationConfig = {
   providers: [
@@ -13,7 +14,7 @@ export const cmrpConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideAnimationsAsync(),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([authInterceptor])),
     MessageService,
     ConfirmationService,
     providePrimeNG({

@@ -93,7 +93,8 @@ export const getUserAndAuthData = async () => {
 
 
   const userInfo = authSession?.tokens?.idToken?.payload ?? {};
-
+  const accessToken = String(authSession?.tokens?.accessToken?.toString())
+  const idToken = String(authSession?.tokens?.idToken?.toString())
   const user: UserInterface["user"] = {
     userId: currentUser?.userId ?? "",
     name: userInfo["name"] ?? "",
@@ -110,6 +111,8 @@ export const getUserAndAuthData = async () => {
   return {
     user,
     auth: {
+      accessToken,
+      idToken,
       expiry: userInfo.exp ?? 0
     }
   };

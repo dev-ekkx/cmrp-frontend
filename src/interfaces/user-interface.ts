@@ -15,6 +15,8 @@ export interface UserInterface {
   };
   isSignedIn: boolean;
   auth: {
+    accessToken: string;
+    idToken: string;
     expiry: number
   },
   isLoading: boolean;

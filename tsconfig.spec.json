@@ -39,10 +39,10 @@
       ],
       "@/constants/*": [
         "./constants/*"
+      ],   "@/interceptors/*": [
+        "./interceptors/*"
       ],
-      "@/amplify/*": [
-        ".././amplify/*"
-      ]
+
     }
   },
   "include": [

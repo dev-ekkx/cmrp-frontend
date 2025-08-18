@@ -86,6 +86,10 @@ export class Users implements OnInit {
 
     // update cities when region changes
     this.userForm.get('region')?.valueChanges.subscribe(regionValue => {
+      if (!regionValue?.value) {
+        this.cities = [];
+        return;
+      }
       const region = ghanaRegions.find(r => r.value === regionValue.value);
       this.cities = region ? region.cities : [];
       this.userForm.get('city')?.reset();
@@ -145,11 +149,38 @@ export class Users implements OnInit {
     return types[key] || 'text';
   }
 
+  protected cancelOnboardUserOperation() {
+    this.isSubmitting.set(false)
+    this.showAddUserModal = false;
+    this.userForm.reset();
+  }
+
   protected onSubmit() {
     this.isSubmitting.set(true)
     if (this.userForm.valid) {
       this.authService.onboardUser(this.userForm.value)
-      console.log(this.userForm.value);
+        .subscribe({
+          next: value => {
+            console.log(value);
+            this.isSubmitting.set(false);
+            this.showAddUserModal = false;
+            this.userForm.reset();
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'User onboarded successfully'
+            });
+          },
+          error: error => {
+            this.isSubmitting.set(false);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: error.error?.message || 'Failed to onboard user'
+            });
+            console.error('Error onboarding user:', error);
+          }
+        })
     }
 
   }
