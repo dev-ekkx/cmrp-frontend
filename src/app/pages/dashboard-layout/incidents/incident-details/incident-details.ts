@@ -1,4 +1,4 @@
-import {Component, effect, input, OnInit, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, input, OnInit, output} from '@angular/core';
 import {IIncidentDetails} from '@/interfaces/incident-interface';
 import {Tag} from 'primeng/tag';
 import {getIncidentSeverity} from '@/lib/utils';
@@ -8,6 +8,7 @@ import {Textarea} from 'primeng/textarea';
 
 @Component({
   selector: 'cmrp-incident-details',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     Tag,
     Select,

@@ -28,3 +28,15 @@ export interface IUserData {
   city: string
   role: string
 }
+
+
+export interface RegionOrCityOption {
+  label: string;
+  value: string;
+}
+
+export interface RegionI {
+  label: string;
+  value: string;
+  cities: RegionOrCityOption[];
+}

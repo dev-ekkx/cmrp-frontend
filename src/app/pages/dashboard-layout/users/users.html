@@ -4,9 +4,10 @@
     <p class="text-neutral-500">Onboard other administrators and city officials</p>
   </div>
 
-  <p-button icon="pi pi-user-plus">
-    <!--    <span>Add User</span>-->
-  </p-button>
+  <button class="bg-primary h-max flex items-center gap-2 active:bg-primary-light hover:bg-primary-light" pButton>
+    <i class="pi pi-user-plus text-white"></i>
+    <span>Add User</span>
+  </button>
 </section>
 
 <!--User summary cards -->
@@ -90,3 +91,102 @@
     </ng-template>
   </p-table>
 </section>
+
+<!--Add user dialog-->
+<p-dialog [(visible)]="showAddUserModal"
+          [breakpoints]="{ '5199px': '30vw', '1699px': '45vw', '1199px': '55vw', '1029px': '75vw', '575px': '90vw' }"
+          [draggable]="false"
+          [modal]="true"
+          [resizable]="false"
+          [style]="{ width: '50vw' }"
+          maskStyleClass="backdrop-blur-sm"
+
+>
+
+  <!--  Modal content-->
+  <!--    Form container-->
+  <form [formGroup]="userForm" class="flex flex-col gap-5">
+    <!--Form description-->
+    <div class="flex flex-col  text-center">
+      <h3 class="capitalize font-semibold text-2xl">Onboard Admin or City Official</h3>
+      <p>Please enter the details of the user to onboard</p>
+    </div>
+
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-4">
+      <!--      Map through dynamic form elements-->
+      @for (control of userFormControls(); track control) {
+        @let
+        inputError = userForm.get(control)?.invalid && (userForm.get(control)?.dirty || userForm.get(control)?.touched);
+        @let label = control.split('_').join(' ');
+        <div [class]="cn('', {
+          'md:col-span-2': control === 'name'
+          })">
+
+          <p-float-label variant="on">
+            @if (control === 'telephone') {
+              <p-input-mask
+                mask="(999) 999-9999"
+                styleClass="w-full"
+                [invalid]="inputError"
+                [id]="control"
+                [autofocus]="false"
+                [formControlName]="control"
+                [unmask]="true"
+              />
+            } @else if (["region", "city"].includes(control)) {
+              <p-select
+                [formControlName]="control"
+                [options]=" control === 'region' ? regions : cities"
+                [invalid]="inputError"
+                [autofocus]="false"
+                appendTo="body"
+                optionLabel="label" class="w-full"/>
+            } @else {
+              <input autocomplete="on" [type]="getInputType(control)"
+                     [id]="control"
+                     [formControlName]="control"
+                     pInputText
+                     class="w-full"
+                     [invalid]="inputError"
+              />
+            }
+            <label class="text-sm" [for]="control">{{ label | titlecase }}</label>
+          </p-float-label>
+          @if (inputError) {
+            <div class="text-sm text-red-600">
+              @if (userForm.get(control)?.errors?.['required']) {
+                <div>{{ label | titlecase }} is required</div>
+              }
+              @if (userForm.get(control)?.errors?.['email']) {
+                <div>Please enter a valid email address</div>
+              }
+              @if (userForm.get(control)?.errors?.['minlength']) {
+                <div>{{ control | titlecase }} must be at least 5 characters long</div>
+              }
+              @if (userForm.get(control)?.errors?.['invalidGhanaPhone']) {
+                <div>Enter a valid 10-digit Ghanaian phone number (e.g., 0241234567).</div>
+              }
+              @if (userForm.get('confirm_password')?.errors?.['passwordMismatch']) {
+                <div>Passwords do not match.</div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </form>
+
+  <ng-template #footer>
+    <div class="flex items-center gap-4">
+      <p-button label="Cancel" variant="outlined"/>
+      <p-button
+        [disabled]="userForm.invalid"
+        [loading]="isSubmitting()"
+        label="Onboard User"
+        styleClass="w-full bg-primary-light"
+        type="submit"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
