@@ -98,7 +98,7 @@ export const getUserAndAuthData = async () => {
     userId: currentUser?.userId ?? "",
     name: userInfo["name"] ?? "",
     email: userInfo["email"] ?? "",
-    telephone: userInfo["email"] ?? "",
+    telephone: userInfo["phone_number"] ?? "",
     region: userInfo["custom:region"] ?? "",
     city: userInfo["custom:city"] ?? "",
     role: Array.isArray(userInfo["cognito:groups"])

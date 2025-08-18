@@ -17,6 +17,7 @@ export class AuthService {
   protected router = inject(Router)
 
   public async signUp(data: AuthFormInterface) {
+    const telephone = `+233${data.telephone.slice(1)}`
     const user: SignUpInput = {
       username: data.email,
       password: data.password,
@@ -24,6 +25,7 @@ export class AuthService {
         userAttributes: {
           email: data.email,
           name: data.name,
+          phone_number: telephone,
           'custom:region': data.region,
           'custom:city': data.city,
         }

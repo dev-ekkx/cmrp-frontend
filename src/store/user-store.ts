@@ -3,8 +3,6 @@ import {patchState, signalStore, withComputed, withHooks, withMethods, withState
 import {computed, inject} from '@angular/core';
 import {AuthService} from '../app/services/auth-service/auth-service';
 
-const isSignedIn = localStorage.getItem('isSignedIn') !== null;
-
 const initialState: UserInterface = {
   user: {
     userId: "",
@@ -15,7 +13,7 @@ const initialState: UserInterface = {
     region: "",
     role: "Citizen",
   },
-  isSignedIn,
+  isSignedIn: false,
   isLoading: false,
   auth: {
     expiry: 0
