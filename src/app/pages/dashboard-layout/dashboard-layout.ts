@@ -35,10 +35,9 @@ export class DashboardLayout implements OnInit {
 
     ngOnInit() {
         const isTokenExpired = checkTokenExpiry(this.auth.expiry)
-        console.log(isTokenExpired)
-        // if (this.isSignedIn() && isTokenExpired) {
-        //     this.userStore.fetchUserInfo()
-        // }
+        if (this.isSignedIn() && !isTokenExpired) {
+            this.userStore.fetchUserInfo()
+        }
     }
 
     protected setAuthModalAfterAuthentication() {

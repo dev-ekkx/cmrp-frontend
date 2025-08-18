@@ -9,13 +9,13 @@
         <span class="text-primary font-semibold text-xl">Welcome Back,</span>
         <span class="text-primary-light font-black text-2xl">Admin</span>
       </div>
-      <!--      @if (!isSignedIn()) {-->
-      <button (click)="showAuthDialog = true" class="signInButton button-container text-white !bg-primary-light"
-              pButton>
-        <i class="pi pi-sign-in"></i>
-        <span>Sign In</span>
-      </button>
-      <!--      }-->
+      @if (!isSignedIn()) {
+        <button (click)="showAuthDialog = true" class="button-container text-white !bg-primary-light"
+                pButton>
+          <i class="pi pi-sign-in"></i>
+          <span>Sign In</span>
+        </button>
+      }
     </section>
     <section class="p-4">
       <router-outlet/>

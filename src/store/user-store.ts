@@ -3,6 +3,8 @@ import {patchState, signalStore, withComputed, withHooks, withMethods, withState
 import {computed, inject} from '@angular/core';
 import {AuthService} from '../app/services/auth-service/auth-service';
 
+const isSignedIn = Boolean(localStorage.getItem('isSignedIn') as string)
+console.log(isSignedIn);
 const initialState: UserInterface = {
   user: {
     userId: "",
@@ -13,7 +15,7 @@ const initialState: UserInterface = {
     region: "",
     role: "Citizen",
   },
-  isSignedIn: false,
+  isSignedIn,
   isLoading: false,
   auth: {
     expiry: 0
@@ -32,6 +34,7 @@ export const UserStore = signalStore(
   withMethods((store, authService = inject(AuthService)) => ({
     setIsSignedIn() {
       patchState(store, {isSignedIn: true});
+      localStorage.setItem('isSignedIn', 'true');
     },
 
     async fetchUserInfo() {
@@ -42,6 +45,7 @@ export const UserStore = signalStore(
 
     signOut() {
       authService.signOut().then(() => {
+        localStorage.setItem('isSignedIn', 'false');
         const user = {
           userId: "",
           name: "",

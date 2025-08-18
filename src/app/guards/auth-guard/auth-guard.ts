@@ -11,7 +11,6 @@ export const authGuard: CanActivateChildFn = async (childRoute, state) => {
     if (userStore.isUserSignedIn()()) {
         await userStore.fetchUserInfo();
         const user = userStore.userData()
-
         if (route === "my-incidents" && user().role === "Citizen") return true
         if (["incidents", "users"].includes(route) && ["Admin", "CityOfficial"].includes(user().role)) {
             return true
