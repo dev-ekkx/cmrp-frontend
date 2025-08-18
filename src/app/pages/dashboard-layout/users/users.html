@@ -119,9 +119,7 @@
           @let
           inputError = userForm.get(control)?.invalid && (userForm.get(control)?.dirty || userForm.get(control)?.touched);
           @let label = control.split('_').join(' ');
-          <div [class]="cn('', {
-          'md:col-span-2': control === 'name'
-          })">
+          <div>
 
             <p-float-label variant="on">
               @if (control === 'telephone') {
@@ -134,10 +132,10 @@
                   [formControlName]="control"
                   [unmask]="true"
                 />
-              } @else if (["region", "city"].includes(control)) {
+              } @else if (["region", "city", "role"].includes(control)) {
                 <p-select
                   [formControlName]="control"
-                  [options]=" control === 'region' ? regions : cities"
+                  [options]="control === 'role'? roles : (control === 'region' ? regions : cities)"
                   [invalid]="inputError"
                   [autofocus]="false"
                   appendTo="body"
@@ -181,6 +179,7 @@
       <div class="flex items-center gap-4">
         <p-button (click)="showAddUserModal = false" label="Cancel" variant="outlined"/>
         <p-button
+          (click)="onSubmit()"
           [disabled]="userForm.invalid"
           [loading]="isSubmitting()"
           label="Onboard User"

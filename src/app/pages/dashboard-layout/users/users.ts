@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 import {UserCard} from '@/pages/dashboard-layout/users/user-card/user-card';
 import {ghanaRegions, usersTableData, userSummaryCards, userTableHeaders} from '@/constants/index';
 import {IconField} from 'primeng/iconfield';
@@ -15,6 +15,7 @@ import {FloatLabel} from 'primeng/floatlabel';
 import {InputMask} from 'primeng/inputmask';
 import {TitleCasePipe} from '@angular/common';
 import {RegionOrCityOption} from '@/interfaces/user-interface';
+import {AuthService} from '../../../services/auth-service/auth-service';
 
 @Component({
   selector: 'cmrp-users',
@@ -47,6 +48,7 @@ export class Users implements OnInit {
     code: "all"
   }
 
+  protected authService = inject(AuthService)
   protected searchValue = ""
   protected readonly userTableHeaders = userTableHeaders;
   protected readonly usersTableData = usersTableData
@@ -62,8 +64,8 @@ export class Users implements OnInit {
   ];
 
   protected roles = [
-    {label: 'Administrators', value: 'administrator'},
-    {label: 'City Officials', value: 'city official'},
+    {label: 'Administrator', value: 'Admin'},
+    {label: 'City Official', value: 'CityOfficial'},
   ];
 
   protected regions: RegionOrCityOption[] = []
@@ -72,8 +74,9 @@ export class Users implements OnInit {
     name: new FormControl("", [Validators.required, this.minLengthValidator]),
     email: new FormControl("", [Validators.required, Validators.email]),
     telephone: new FormControl("", [Validators.required, ghPhoneValidator()]),
-    region: new FormControl("", [Validators.required, this.minLengthValidator]),
-    city: new FormControl("", [Validators.required, Validators.minLength(2)]),
+    role: new FormControl("", [Validators.required]),
+    region: new FormControl("", [Validators.required]),
+    city: new FormControl("", [Validators.required]),
   });
   protected userFormControls = signal<string[]>(Object.keys(this.userForm.controls));
 
@@ -116,6 +119,7 @@ export class Users implements OnInit {
 
   protected onSubmit() {
     if (this.userForm.valid) {
+      this.authService.onboardUser(this.userForm.value)
       console.log(this.userForm.value);
     }
 
